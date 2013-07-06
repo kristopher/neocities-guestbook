@@ -7,7 +7,7 @@ end
 ::RedisConfig = {}
 
 if %(production).include?(ENV['RACK_ENV'])
-  RedisConfig[:url] = ENV["REDISTOGO_URL"]
+  RedisConfig[:url] = ENV["REDISCLOUD_URL"]
 else
   RedisConfig[:host] = 'localhost'
 end
