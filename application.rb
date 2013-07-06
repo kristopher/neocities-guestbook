@@ -18,15 +18,23 @@ class Entry
   end
 
   def valid?
-    if key.nil? && key.empty?
+    if !key.nil? && !key.empty?
+      if key.length > 36
+        errors['key'] = 'Cannot be more than 36 characters'
+      end
+    else
       errors['key'] = 'Cannot be blank'
     end
-    if name.nil? && name.empty?
+    if !name.nil? && !name.empty?
+      if name.length > 100
+        errors['name'] = 'Cannot be more than 100 characters'
+      end
+    else
       errors['name'] = 'Cannot be blank'
     end
     if !message.nil? && !message.empty?
       if message.length > 140
-        errors['message'] = 'Must be 140 characters or less'
+        errors['message'] = 'Cannot be more than 140 characters'
       end
     else
       errors['message'] = 'Cannot be blank'
