@@ -1,5 +1,7 @@
 require 'cgi'
 require 'json'
+require 'newrelic_rpm'
+require 'new_relic/agent/instrumentation/rack'
 require 'redis'
 require './config/redis.rb'
 
