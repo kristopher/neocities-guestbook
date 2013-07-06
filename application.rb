@@ -6,8 +6,18 @@ require './config/redis.rb'
 class Entry
   attr_accessor :key, :name, :message, :created_at
 
-  def self.get(key, offset = 0)
-    Redis.current.lrange(key, -(10 + offset), (10 + offset))
+  def self.per_page
+    10
+  end
+
+  def self.get(key, page = 1)
+    start =
+      if page <= 1
+        0
+      else
+        ((page - 1) * 10) - 1
+      end
+    Redis.current.lrange(key, start, start + per_page)
   end
 
   def initialize(attrs)
@@ -47,7 +57,7 @@ class Entry
   end
 
   def save
-    Redis.current.rpush(key, as_json.to_json)
+    Redis.current.lpush(key, as_json.to_json)
   end
 
   def as_json
@@ -78,7 +88,7 @@ class Application
     end
 
     if @request.get?
-      body = "[" + Entry.get(params['key']).join(',') + "]"
+      body = "[" + Entry.get(params['key'], params['page'] || 1).join(',') + "]"
       if params['callback']
         body = params['callback'] + "(#{body});"
       end
