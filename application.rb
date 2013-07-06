@@ -90,7 +90,7 @@ class Application
     end
 
     if @request.get?
-      body = "[" + Entry.get(params['key'], params['page'] || 1).join(',') + "]"
+      body = "[" + Entry.get(params['key'], (params['page'] || 1).to_i).join(',') + "]"
       if params['callback']
         body = params['callback'] + "(#{body});"
       end
