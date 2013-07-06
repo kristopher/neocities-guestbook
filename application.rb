@@ -77,6 +77,7 @@ class Application
   end
 
   def initialize(env)
+    @env = env
     @request = Rack::Request.new(env)
   end
 
@@ -84,17 +85,27 @@ class Application
     @request.params
   end
 
+  def headers
+    @headers = {
+      'Content-Type' => 'application/json'
+    }
+  end
+
   def dispatch
-    if !params['key']
-      return [404, {}, []]
+    if @env['HTTP_ORIGIN'] && @env['HTTP_ORIGIN'] =~ /http(s)?\:\/\/.+\.neocities\.org/i
+      headers['Access-Control-Allow-Origin'] = @env['HTTP_ORIGIN']
     end
+
+    puts @env
+    puts @env['HTTP_ORIGIN']
+    puts headers
 
     if @request.get?
       body = "[" + Entry.get(params['key'], (params['page'] || 1).to_i).join(',') + "]"
       if params['callback']
         body = params['callback'] + "(#{body});"
       end
-      [200, { 'Content-Type' => 'application/json' }, [body]]
+      [200, headers, [body]]
     elsif @request.post?
       @entry = Entry.new({
         key: params['key'],
@@ -110,14 +121,14 @@ class Application
           if params['callback']
             body = params['callback'] + "(#{body})"
           end
-          [201, { 'Content-Type' => 'application/json' }, [body]]
+          [201, headers, [body]]
         end
       else
         body = { errors: @entry.errors }.to_json
         if params['callback']
           body = params['callback'] + "(#{body})"
         end
-        [422, { 'Content-Type' => 'application/json' }, [body]]
+        [422, headers, [body]]
       end
     else
       [404, {}, []]
