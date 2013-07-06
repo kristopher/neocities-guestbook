@@ -1,7 +1,7 @@
 # bundle exec unicorn -p $ PORT -E $RACK_ENV -c ./config/unicorn.rb
 
 rack_env = ENV['RACK_ENV'] || 'production'
-worker_processes 4
+worker_processes 10
 preload_app true
 timeout 25
 
